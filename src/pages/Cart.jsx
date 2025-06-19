@@ -1,12 +1,19 @@
 import React, { useContext, useState } from 'react';
+import { Navigate } from 'react-router-dom';
 import { CartContext } from '../context/CartContext';
+import { AuthContext } from '../context/AuthContext'; // se conserva del branch correcto
 import './cart.css';
 
 const Cart = () => {
+  const { usuario } = useContext(AuthContext); // se usa para validar login
   const { cart, clearCart, removeFromCart, changeQuantity } = useContext(CartContext);
   const [mensaje, setMensaje] = useState('');
   const [nombre, setNombre] = useState('');
   const [correo, setCorreo] = useState('');
+
+  if (!usuario) {
+    return <Navigate to="/login" replace />;
+  }
 
   const total = cart.reduce((acc, product) => acc + product.price * product.quantity, 0);
 
