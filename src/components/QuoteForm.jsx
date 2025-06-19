@@ -1,8 +1,11 @@
 import React, { useState, useContext } from 'react';
+import { Navigate } from 'react-router-dom';
 import { CartContext } from '../context/CartContext';
+import { AuthContext } from '../context/AuthContext';
 import './QuoteForm.css';
 
 const QuoteForm = () => {
+  const { usuario } = useContext(AuthContext);
   const { cart, clearCart } = useContext(CartContext);
   const [tipo, setTipo] = useState('natural');
   const [nombre, setNombre] = useState('');
@@ -10,6 +13,10 @@ const QuoteForm = () => {
   const [correo, setCorreo] = useState('');
   const [dimensiones, setDimensiones] = useState('');
   const [enviado, setEnviado] = useState(false);
+
+  if (!usuario) {
+    return <Navigate to="/login" replace />;
+  }
 
   // ✅ RUT con guion automático, max 8 dígitos + DV
   const handleRutChange = (e) => {
