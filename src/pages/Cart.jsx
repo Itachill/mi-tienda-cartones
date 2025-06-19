@@ -1,11 +1,19 @@
 import React, { useContext, useState } from 'react';
+import { Navigate } from 'react-router-dom';
 import { CartContext } from '../context/CartContext';
+import { AuthContext } from '../context/AuthContext';
+import './cart.css';
 
 const Cart = () => {
-  const { cart, clearCart, removeFromCart, removeOneFromCart, addToCart } = useContext(CartContext);
+  const { usuario } = useContext(AuthContext);
+  const { cart, clearCart, removeFromCart, changeQuantity } = useContext(CartContext);
   const [mensaje, setMensaje] = useState('');
   const [nombre, setNombre] = useState('');
   const [correo, setCorreo] = useState('');
+
+  if (!usuario) {
+    return <Navigate to="/login" replace />;
+  }
 
   const total = cart.reduce((acc, product) => acc + product.price * product.quantity, 0);
 
@@ -32,52 +40,50 @@ const Cart = () => {
   };
 
   return (
-    <div className="page-container">
+    <div className="cart-container">
       <h2 className="section-title">Carrito de Compras</h2>
 
       {cart.length === 0 ? (
-        <p>No has agregado productos aún.</p>
+        <p className="mensaje-vacio">No has agregado productos aún.</p>
       ) : (
         <>
-          <ul>
+          <ul className="cart-list">
             {cart.map((item) => (
-              <li key={item.id}>
-                <strong>{item.name}</strong> - ${item.price} x {item.quantity} = ${item.price * item.quantity}
-                <div style={{ marginTop: '0.5rem' }}>
-                  <button onClick={() => removeOneFromCart(item.id)}>-</button>
-                  <button onClick={() => addToCart(item)}>+</button>
-                  <button onClick={() => removeFromCart(item.id)} style={{ marginLeft: '1rem', color: 'red' }}>Eliminar</button>
+              <li key={item.id} className="cart-card">
+                <h3>{item.name}</h3>
+                <p>${item.price} x {item.quantity} = ${item.price * item.quantity}</p>
+                <div className="cart-actions">
+                  <button onClick={() => changeQuantity(item.id, item.quantity - 1)}>-</button>
+                  <span>{item.quantity}</span>
+                  <button onClick={() => changeQuantity(item.id, item.quantity + 1)}>+</button>
+                  <button className="btn-eliminar" onClick={() => removeFromCart(item.id)}>Eliminar</button>
                 </div>
               </li>
             ))}
           </ul>
-          <h3>Total: ${total}</h3>
+          <h3 className="cart-total">Total: ${total}</h3>
         </>
       )}
 
-      {/* Formulario */}
-      <div style={{ marginTop: '2rem' }}>
-        <label>Nombre:</label><br />
+      <div className="cart-form">
+        <label>Nombre:</label>
         <input
           type="text"
           placeholder="Tu nombre"
           value={nombre}
           onChange={(e) => setNombre(e.target.value)}
-          style={{ width: '100%', padding: '0.5rem', marginBottom: '1rem' }}
-        /><br />
+        />
 
-        <label>Correo electrónico:</label><br />
+        <label>Correo electrónico:</label>
         <input
           type="email"
           placeholder="tucorreo@ejemplo.com"
           value={correo}
           onChange={(e) => setCorreo(e.target.value)}
-          style={{ width: '100%', padding: '0.5rem', marginBottom: '1rem' }}
         />
       </div>
 
-      {/* Botones de acción */}
-      <div style={{ marginTop: '1rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+      <div className="cart-actions" style={{ marginTop: '1rem' }}>
         <button onClick={enviarCotizacion} className="btn btn-primary">
           Generar Cotización
         </button>
@@ -86,13 +92,13 @@ const Cart = () => {
           Pagar
         </button>
 
-        <button onClick={clearCart} className="btn" style={{ background: '#ccc', color: '#000' }}>
+        <button onClick={clearCart} className="btn btn-secundario">
           Vaciar Carrito
         </button>
       </div>
 
       {mensaje && (
-        <p style={{ color: 'green', marginTop: '1rem' }}>{mensaje}</p>
+        <p className="mensaje-exito">{mensaje}</p>
       )}
     </div>
   );

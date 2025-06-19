@@ -1,13 +1,22 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
+import { Navigate } from 'react-router-dom';
+import { CartContext } from '../context/CartContext';
+import { AuthContext } from '../context/AuthContext';
 import './QuoteForm.css';
 
 const QuoteForm = () => {
+  const { usuario } = useContext(AuthContext);
+  const { cart, clearCart } = useContext(CartContext);
   const [tipo, setTipo] = useState('natural');
   const [nombre, setNombre] = useState('');
   const [rut, setRut] = useState('');
   const [correo, setCorreo] = useState('');
   const [dimensiones, setDimensiones] = useState('');
   const [enviado, setEnviado] = useState(false);
+
+  if (!usuario) {
+    return <Navigate to="/login" replace />;
+  }
 
   // ✅ RUT con guion automático, max 8 dígitos + DV
   const handleRutChange = (e) => {
@@ -23,18 +32,36 @@ const QuoteForm = () => {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const datos = { tipo, nombre, rut, correo, dimensiones };
-    console.log('📦 Cotización solicitada:', datos);
+    const total = cart.reduce((acc, p) => acc + p.price * p.quantity, 0);
+    const datos = {
+      tipo,
+      nombre,
+      rut,
+      correo,
+      dimensiones,
+      productos: cart,
+      total,
+    };
 
-    setEnviado(true);
-    setNombre('');
-    setRut('');
-    setCorreo('');
-    setDimensiones('');
+    try {
+      await fetch('http://localhost:3001/api/cotizacion', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(datos),
+      });
 
-    setTimeout(() => setEnviado(false), 5000);
+      setEnviado(true);
+      clearCart();
+      setNombre('');
+      setRut('');
+      setCorreo('');
+      setDimensiones('');
+      setTimeout(() => setEnviado(false), 5000);
+    } catch (error) {
+      console.error('Error enviando cotizacion', error);
+    }
   };
 
   return (
@@ -90,8 +117,8 @@ const QuoteForm = () => {
           required
         />
 
-        <button type="submit">Enviar Solicitud</button>
-        {enviado && <p className="exito">✅ Cotización enviada con éxito</p>}
+        <button type="submit">Enviar Cotización</button>
+        {enviado && <p className="exito">Tu cotización fue enviada con éxito.</p>}
       </form>
     </div>
   );
