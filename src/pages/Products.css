@@ -1,0 +1,155 @@
+/* --- Estilos Globales y Tema Principal --- */
+:root {
+  --primary-color: #2a6fdb; /* Un azul corporativo */
+  --dark-color: #333;
+  --light-color: #fff;
+  --background-color: #f8f9fa; /* Fondo de página muy suave */
+  --border-color: #e9ecef;
+  --text-color: #495057;
+  --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  --border-radius: 12px;
+}
+
+body {
+  background-color: var(--background-color);
+  color: var(--text-color);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  line-height: 1.6;
+}
+
+/* --- Contenedor Principal de la Página --- */
+.page-container {
+  max-width: 1200px;
+  margin: 2rem auto;
+  padding: 0 2rem;
+}
+
+/* --- Estilos de Sección --- */
+.section-title {
+  text-align: center;
+  font-size: 2.2rem;
+  font-weight: 600;
+  color: var(--dark-color);
+  margin-bottom: 2.5rem;
+}
+
+.section-divider {
+  border-top: 1px solid var(--border-color);
+  margin: 4rem auto;
+  width: 80%;
+}
+
+
+/* --- Cuadrícula de Productos --- */
+.products-grid {
+  display: grid;
+  /* Crea columnas responsivas: se ajustan automáticamente */
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 2rem;
+}
+
+/* --- Tarjeta de Producto --- */
+.product-card {
+  background-color: var(--light-color);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  padding: 1.5rem;
+  text-align: center;
+  box-shadow: var(--shadow);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.product-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+}
+
+.product-card h3 {
+  margin-top: 0;
+  font-size: 1.25rem;
+  color: var(--dark-color);
+}
+
+.product-details {
+  font-size: 0.95rem;
+  color: #6c757d;
+}
+
+.product-price {
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: var(--primary-color);
+  margin: 1rem 0;
+}
+
+
+/* --- Estilos de Botones Unificados --- */
+.btn {
+  display: inline-block;
+  padding: 10px 20px;
+  font-size: 1rem;
+  font-weight: 600;
+  text-align: center;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+  width: 100%; /* El botón ocupa todo el ancho de la tarjeta */
+}
+
+.btn-primary {
+  background-color: var(--primary-color);
+  color: var(--light-color);
+}
+
+.btn:hover {
+  transform: scale(1.03);
+}
+
+.btn-primary:hover {
+  background-color: #1e5ab8; /* Un azul un poco más oscuro */
+}
+
+/* --- Adaptación del Formulario de Cotización --- */
+/*
+  Este CSS se asegura de que tu QuoteForm (del paso anterior)
+  se integre perfectamente con el nuevo diseño.
+*/
+.quote-section {
+  /* No necesita estilos especiales, el componente de formulario ya los tiene */
+  margin-top: 2rem; /* Espacio para que respire */
+}
+
+.quote-form {
+  /* Sobrescribimos/Aseguramos estilos para que coincida con las tarjetas */
+  max-width: 700px; /* Hacemos el formulario un poco más ancho */
+  margin: 2rem auto;
+  background-color: var(--light-color);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow);
+  padding: 2.5rem; /* Más padding para un look premium */
+}
+
+/* Asegurarnos de que el botón del formulario use el estilo unificado */
+.quote-form button {
+  /* Hereda las propiedades de .btn, pero podemos ser explícitos */
+  display: inline-block;
+  padding: 12px 20px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  text-align: center;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+  width: 100%;
+  margin-top: 1.5rem;
+  background-color: var(--dark-color);
+  color: var(--light-color);
+}
+
+.quote-form button:hover {
+  background-color: #555;
+  transform: scale(1.02);
+}

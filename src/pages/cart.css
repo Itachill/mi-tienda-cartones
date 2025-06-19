@@ -1,0 +1,84 @@
+.cart-container {
+  max-width: 900px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background: var(--light-color);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow);
+}
+
+.cart-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.cart-card {
+  border: 1px solid var(--border-color);
+  padding: 1rem;
+  border-radius: 8px;
+  box-shadow: var(--shadow);
+  background-color: #fff;
+}
+
+.cart-card h3 {
+  margin: 0;
+  font-size: 1.2rem;
+}
+
+.cart-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.cart-actions button {
+  padding: 0.3rem 0.6rem;
+  border: none;
+  background-color: var(--primary-color);
+  color: white;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.btn-eliminar {
+  background-color: red;
+}
+
+.cart-total {
+  text-align: right;
+  margin-top: 2rem;
+  font-size: 1.3rem;
+  font-weight: bold;
+}
+
+.cart-form {
+  margin-top: 2rem;
+}
+
+.cart-form input {
+  display: block;
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 1rem;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+.btn-secundario {
+  background-color: #ccc;
+  color: #000;
+  margin-left: 1rem;
+}
+
+.mensaje-exito {
+  color: green;
+  margin-top: 1rem;
+  text-align: center;
+}
+
+.mensaje-vacio {
+  text-align: center;
+  font-size: 1.1rem;
+}

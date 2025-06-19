@@ -1,0 +1,97 @@
+.quote-form {
+  max-width: 600px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background: #f9f9f9;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.quote-form h2 {
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.quote-form p {
+  text-align: center;
+  font-size: 0.95rem;
+  margin-bottom: 1.5rem;
+}
+
+/* Etiquetas */
+.quote-form label {
+  display: block;
+  margin-bottom: 0.5rem;
+  margin-top: 1rem; /* Añade espacio entre campos */
+  font-weight: 600;
+}
+
+/* Estilo unificado para todos los campos del formulario */
+.field {
+  width: 100%;
+  padding: 12px 15px;
+  margin-bottom: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 1rem;
+  box-sizing: border-box; /* Asegura que el padding no afecte el ancho total */
+}
+
+/* Ajustes específicos para el área de texto */
+.field.textarea {
+  min-height: 100px;
+  resize: vertical;
+  padding-top: 14px;
+  padding-bottom: 14px;
+}
+
+/* Estilo del botón */
+.quote-form button {
+  width: 100%;
+  padding: 12px;
+  margin-top: 1.5rem; /* Espacio antes del botón */
+  background-color: #333;
+  color: white;
+  font-weight: bold;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.quote-form button:hover {
+  background-color: #555;
+}
+
+/* Mensaje de éxito */
+.quote-form .exito {
+  color: green;
+  text-align: center;
+  margin-top: 1rem;
+}
+
+/* Estilo al enfocar un campo */
+.field:focus {
+  outline: none;
+  border-color: #777;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+}
+
+/* Diseño Responsivo */
+@media (max-width: 480px) {
+  .quote-form {
+    padding: 1rem;
+  }
+
+  .quote-form h2 {
+    font-size: 1.25rem;
+  }
+
+  .field {
+    font-size: 0.95rem;
+  }
+
+  .quote-form button {
+    font-size: 1rem;
+  }
+}
