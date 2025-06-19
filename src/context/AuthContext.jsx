@@ -1,23 +1,25 @@
-import React, { createContext, useState } from 'react';
+import { createContext, useState } from 'react';
 
 export const AuthContext = createContext();
 
-export const AuthProvider = ({ children }) => {
-  const [usuario, setUsuario] = useState(null);
+export function AuthProvider({ children }) {
+  const [usuario, setUsuario] = useState(null); // null o { nombre, correo, tipo }
 
-  const login = (email, password) => {
-    if (!email || !password) return false;
-    setUsuario({ email });
-    return true;
+  const login = (datos) => {
+    setUsuario(datos);
   };
 
   const logout = () => {
     setUsuario(null);
   };
 
+  const loginComoInvitado = () => {
+    setUsuario({ nombre: 'Invitado', tipo: 'invitado' });
+  };
+
   return (
-    <AuthContext.Provider value={{ usuario, setUsuario, login, logout }}>
+    <AuthContext.Provider value={{ usuario, login, logout, loginComoInvitado }}>
       {children}
     </AuthContext.Provider>
   );
-};
+}
