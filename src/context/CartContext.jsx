@@ -52,6 +52,22 @@ export const CartProvider = ({ children }) => {
     setCart(actualizado);
   };
 
+  // Cambiar la cantidad de un producto directamente
+  const changeQuantity = (productId, cantidad) => {
+    const nuevaCantidad = parseInt(cantidad);
+    if (isNaN(nuevaCantidad) || nuevaCantidad < 0) return;
+
+    if (nuevaCantidad === 0) {
+      removeFromCart(productId);
+      return;
+    }
+
+    const actualizado = cart.map(item =>
+      item.id === productId ? { ...item, quantity: nuevaCantidad } : item
+    );
+    setCart(actualizado);
+  };
+
   // ✅ Vaciar todo el carrito
   const clearCart = () => {
     setCart([]);
@@ -63,7 +79,8 @@ export const CartProvider = ({ children }) => {
       addToCart,
       removeOneFromCart,
       removeFromCart,
-      clearCart
+      clearCart,
+      changeQuantity
     }}>
       {children}
     </CartContext.Provider>
