@@ -1,104 +1,94 @@
-import React, { useContext, useState } from 'react';
-import { Navigate } from 'react-router-dom';
+import React, { useContext } from 'react';
 import { CartContext } from '../context/CartContext';
-import { AuthContext } from '../context/AuthContext'; // se conserva del branch correcto
 import './cart.css';
 
 const Cart = () => {
-  const { usuario } = useContext(AuthContext); // se usa para validar login
-  const { cart, clearCart, removeFromCart, changeQuantity } = useContext(CartContext);
-  const [mensaje, setMensaje] = useState('');
-  const [nombre, setNombre] = useState('');
-  const [correo, setCorreo] = useState('');
+  const { cart, removeFromCart, changeQuantity, clearCart } = useContext(CartContext);
 
-  if (!usuario) {
-    return <Navigate to="/login" replace />;
-  }
-
-  const total = cart.reduce((acc, product) => acc + product.price * product.quantity, 0);
-
-  const enviarCotizacion = () => {
-    if (!nombre.trim() || !correo.trim()) {
-      setMensaje("Por favor completa todos los campos.");
-      return;
+  const handleQuantityChange = (productId, value) => {
+    const cantidad = parseInt(value);
+    if (cantidad >= 0) {
+      changeQuantity(productId, cantidad);
     }
-    setMensaje(`📝 Cotización enviada correctamente a ${correo}`);
-    setNombre('');
-    setCorreo('');
-    clearCart();
   };
 
-  const simularPago = () => {
-    if (!nombre.trim() || !correo.trim()) {
-      setMensaje("Para pagar debes ingresar tu nombre y correo.");
-      return;
+  const total = cart.reduce((acc, item) => acc + item.price * item.quantity, 0);
+
+  const handlePagar = async () => {
+    try {
+      const response = await fetch('http://localhost:4000/crear-preferencia', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ productos: cart })
+      });
+
+      const data = await response.json();
+      if (data.id) {
+        window.location.href = `https://www.mercadopago.cl/checkout/v1/redirect?pref_id=${data.id}`;
+      } else {
+        alert('❌ No se pudo generar el link de pago');
+      }
+    } catch (error) {
+      console.error('Error al generar preferencia:', error);
+      alert('❌ Error al procesar el pago');
     }
-    setMensaje(`💳 Pago simulado exitosamente para ${nombre}. Gracias por tu compra!`);
-    setNombre('');
-    setCorreo('');
-    clearCart();
   };
 
   return (
-    <div className="cart-container">
-      <h2 className="section-title">Carrito de Compras</h2>
+    <div className="page-container">
+      <h2 className="section-title">🛒 Tu Carrito</h2>
 
       {cart.length === 0 ? (
-        <p className="mensaje-vacio">No has agregado productos aún.</p>
+        <p style={{ textAlign: 'center', marginTop: '2rem' }}>Tu carrito está vacío.</p>
       ) : (
         <>
-          <ul className="cart-list">
-            {cart.map((item) => (
-              <li key={item.id} className="cart-card">
+          <div className="products-grid">
+            {cart.map(item => (
+              <div key={item.id} className="product-card">
                 <h3>{item.name}</h3>
-                <p>${item.price} x {item.quantity} = ${item.price * item.quantity}</p>
-                <div className="cart-actions">
-                  <button onClick={() => changeQuantity(item.id, item.quantity - 1)}>-</button>
-                  <span>{item.quantity}</span>
-                  <button onClick={() => changeQuantity(item.id, item.quantity + 1)}>+</button>
-                  <button className="btn-eliminar" onClick={() => removeFromCart(item.id)}>Eliminar</button>
-                </div>
-              </li>
+                <p className="product-details">Medida: {item.size}</p>
+                <p className="product-price">${item.price}</p>
+
+                <input
+                  type="number"
+                  min="0"
+                  value={item.quantity}
+                  onChange={(e) => handleQuantityChange(item.id, e.target.value)}
+                  style={{ width: '60px', marginBottom: '0.5rem' }}
+                />
+
+                <button
+                  className="btn btn-danger"
+                  onClick={() => removeFromCart(item.id)}
+                >
+                  Eliminar
+                </button>
+              </div>
             ))}
-          </ul>
-          <h3 className="cart-total">Total: ${total}</h3>
+          </div>
+
+          {/* Total y botones */}
+          <div className="cart-summary">
+            <div>Total: <strong>${total}</strong></div>
+            <button className="btn btn-danger" onClick={clearCart}>
+              Vaciar carrito
+            </button>
+            <button
+              style={{
+                backgroundColor: '#43a047',
+                color: '#fff',
+                padding: '0.6rem 1rem',
+                border: 'none',
+                borderRadius: '5px',
+                cursor: 'pointer',
+                marginTop: '1rem'
+              }}
+              onClick={handlePagar}
+            >
+              Pagar con Mercado Pago
+            </button>
+          </div>
         </>
-      )}
-
-      <div className="cart-form">
-        <label>Nombre:</label>
-        <input
-          type="text"
-          placeholder="Tu nombre"
-          value={nombre}
-          onChange={(e) => setNombre(e.target.value)}
-        />
-
-        <label>Correo electrónico:</label>
-        <input
-          type="email"
-          placeholder="tucorreo@ejemplo.com"
-          value={correo}
-          onChange={(e) => setCorreo(e.target.value)}
-        />
-      </div>
-
-      <div className="cart-actions" style={{ marginTop: '1rem' }}>
-        <button onClick={enviarCotizacion} className="btn btn-primary">
-          Generar Cotización
-        </button>
-
-        <button onClick={simularPago} className="btn btn-primary" style={{ background: '#28a745' }}>
-          Pagar
-        </button>
-
-        <button onClick={clearCart} className="btn btn-secundario">
-          Vaciar Carrito
-        </button>
-      </div>
-
-      {mensaje && (
-        <p className="mensaje-exito">{mensaje}</p>
       )}
     </div>
   );

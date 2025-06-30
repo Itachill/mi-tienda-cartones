@@ -1,88 +1,97 @@
-import React, { createContext, useState } from 'react';
+import React, { useContext } from 'react';
+import { CartContext } from '../context/CartContext';
+import './cart.css';
 
-// Crear el contexto
-export const CartContext = createContext();
+const Cart = () => {
+  const { cart, removeFromCart, changeQuantity, clearCart } = useContext(CartContext);
 
-// Proveedor del contexto
-export const CartProvider = ({ children }) => {
-  const [cart, setCart] = useState([]);
-
-  // ✅ Agregar al carrito
-  const addToCart = (product, cantidad = 1) => {
-    const cantidadValida = parseInt(cantidad);
-
-    if (isNaN(cantidadValida) || cantidadValida <= 0) return;
-
-    const itemExistente = cart.find(item => item.id === product.id);
-
-    if (itemExistente) {
-      const actualizado = cart.map(item =>
-        item.id === product.id
-          ? { ...item, quantity: item.quantity + cantidadValida }
-          : item
-      );
-      setCart(actualizado);
-    } else {
-      setCart([...cart, { ...product, quantity: cantidadValida }]);
+  const handleQuantityChange = (productId, value) => {
+    const cantidad = parseInt(value);
+    if (cantidad >= 0) {
+      changeQuantity(productId, cantidad);
     }
   };
 
-  // ✅ Quitar solo 1 unidad del producto
-  const removeOneFromCart = (productId) => {
-    const item = cart.find(item => item.id === productId);
+  const total = cart.reduce((acc, item) => acc + item.price * item.quantity, 0);
 
-    if (!item) return;
+  const handlePagar = async () => {
+    try {
+      const response = await fetch('/crear-preferencia', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ productos: cart })
+      });
 
-    if (item.quantity > 1) {
-      const actualizado = cart.map(item =>
-        item.id === productId
-          ? { ...item, quantity: item.quantity - 1 }
-          : item
-      );
-      setCart(actualizado);
-    } else {
-      // Si solo queda 1, se elimina completamente
-      removeFromCart(productId);
+      const data = await response.json();
+      if (data.id) {
+        window.location.href = `https://www.mercadopago.cl/checkout/v1/redirect?pref_id=${data.id}`;
+      } else {
+        alert('❌ No se pudo generar el link de pago');
+      }
+    } catch (error) {
+      console.error('Error al generar preferencia:', error);
+      alert('❌ Error al procesar el pago');
     }
-  };
-
-  // ✅ Eliminar completamente un producto
-  const removeFromCart = (productId) => {
-    const actualizado = cart.filter(item => item.id !== productId);
-    setCart(actualizado);
-  };
-
-  // Cambiar la cantidad de un producto directamente
-  const changeQuantity = (productId, cantidad) => {
-    const nuevaCantidad = parseInt(cantidad);
-    if (isNaN(nuevaCantidad) || nuevaCantidad < 0) return;
-
-    if (nuevaCantidad === 0) {
-      removeFromCart(productId);
-      return;
-    }
-
-    const actualizado = cart.map(item =>
-      item.id === productId ? { ...item, quantity: nuevaCantidad } : item
-    );
-    setCart(actualizado);
-  };
-
-  // ✅ Vaciar todo el carrito
-  const clearCart = () => {
-    setCart([]);
   };
 
   return (
-    <CartContext.Provider value={{
-      cart,
-      addToCart,
-      removeOneFromCart,
-      removeFromCart,
-      clearCart,
-      changeQuantity
-    }}>
-      {children}
-    </CartContext.Provider>
+    <div className="page-container">
+      <h2 className="section-title">🛒 Tu Carrito</h2>
+
+      {cart.length === 0 ? (
+        <p style={{ textAlign: 'center', marginTop: '2rem' }}>Tu carrito está vacío.</p>
+      ) : (
+        <>
+          <div className="products-grid">
+            {cart.map(item => (
+              <div key={item.id} className="product-card">
+                <h3>{item.name}</h3>
+                <p className="product-details">Medida: {item.size}</p>
+                <p className="product-price">${item.price}</p>
+
+                <input
+                  type="number"
+                  min="0"
+                  value={item.quantity}
+                  onChange={(e) => handleQuantityChange(item.id, e.target.value)}
+                  style={{ width: '60px', marginBottom: '0.5rem' }}
+                />
+
+                <button
+                  className="btn btn-danger"
+                  onClick={() => removeFromCart(item.id)}
+                >
+                  Eliminar
+                </button>
+              </div>
+            ))}
+          </div>
+
+          {/* Total y botones */}
+          <div className="cart-summary">
+            <div>Total: <strong>${total}</strong></div>
+            <button className="btn btn-danger" onClick={clearCart}>
+              Vaciar carrito
+            </button>
+            <button
+              style={{
+                backgroundColor: '#43a047',
+                color: '#fff',
+                padding: '0.6rem 1rem',
+                border: 'none',
+                borderRadius: '5px',
+                cursor: 'pointer',
+                marginTop: '1rem'
+              }}
+              onClick={handlePagar}
+            >
+              Pagar con Mercado Pago
+            </button>
+          </div>
+        </>
+      )}
+    </div>
   );
 };
+
+export default Cart;

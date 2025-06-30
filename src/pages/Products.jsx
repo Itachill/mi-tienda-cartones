@@ -1,6 +1,7 @@
 import React, { useContext, useState } from 'react';
 import { CartContext } from '../context/CartContext';
-import QuoteForm from '../components/QuoteForm'; // Asegúrate que la ruta esté bien
+import { AuthContext } from '../context/AuthContext'; // 🔐 Importamos el contexto de autenticación
+import QuoteForm from '../components/QuoteForm';
 import './Products.css';
 
 const products = [
@@ -11,6 +12,7 @@ const products = [
 
 const Products = () => {
   const { addToCart } = useContext(CartContext);
+  const { usuario } = useContext(AuthContext); // 🔐 Obtenemos el usuario logueado
   const [cantidades, setCantidades] = useState({});
   const [mensajeExito, setMensajeExito] = useState('');
 
@@ -22,10 +24,14 @@ const Products = () => {
   };
 
   const handleAdd = (product) => {
+    if (!usuario) {
+      alert("⚠️ Debes iniciar sesión para agregar productos al carrito.");
+      return;
+    }
+
     const cantidad = cantidades[product.id] || 1;
     addToCart(product, cantidad);
 
-    // Mostrar mensaje de éxito
     setMensajeExito(`✅ ${cantidad} ${product.name}${cantidad > 1 ? 's' : ''} agregada${cantidad > 1 ? 's' : ''} al carrito`);
     setTimeout(() => setMensajeExito(''), 2500);
   };
@@ -76,10 +82,24 @@ const Products = () => {
         ))}
       </div>
 
-      {/* 📩 Formulario de cotización */}
-      <div className="quote-section">
-        <QuoteForm />
-      </div>
+      {/* 📩 Formulario de cotización solo si hay sesión */}
+      {usuario ? (
+        <div className="quote-section">
+          <QuoteForm />
+        </div>
+      ) : (
+        <div className="quote-section" style={{
+          backgroundColor: '#fff3cd',
+          color: '#856404',
+          padding: '1rem',
+          border: '1px solid #ffeeba',
+          borderRadius: '6px',
+          textAlign: 'center',
+          marginTop: '2rem'
+        }}>
+          ⚠️ Inicia sesión para generar una cotización.
+        </div>
+      )}
     </div>
   );
 };

@@ -30,4 +30,18 @@ export default [
       ],
     },
   },
+  // ✅ Configuración para el backend que usa import/export (ES Modules)
+  {
+    files: ['backend/**/*.js'],
+    languageOptions: {
+      ecmaVersion: 2022,
+      sourceType: 'module', // ← Permite usar import/export
+      globals: {
+        require: 'readonly',
+        module: 'readonly',
+        process: 'readonly',
+        __dirname: 'readonly',
+      },
+    },
+  },
 ]
